@@ -283,8 +283,6 @@ call has two targets that the `Label` is direct and the `*Operand` is indirect.
 
 #### Local Storage on the Stack
 
-
-
 ### Part IV Data  3.8 - 3.9 3.11
 
 > # 主要内容
