@@ -42,10 +42,10 @@ movq    $-1                  $rax        $rax = FFFFFFFFFFFFFFFF
 
 ```assem
 movabsq $0x0011223344556677, %rax        %rax = 0011223344556677
-movb    $0xAA                %dl         %dl = AA
-movb    %dl                  %al         %rax = 00112233445566AA
-movsbq  %dl                  %rax        %rax = FFFFFFFFFFFFFFAA
-movzbq  %dl                  %rax        %rax = 00000000000000AA
+movb    $0xAA                %dl         	 %dl = AA
+movb    %dl                  %al          	 %rax = 00112233445566AA
+movsbq  %dl                  %rax         %rax = FFFFFFFFFFFFFFAA
+movzbq  %dl                  %rax       	  	 %rax = 00000000000000AA
 ```
 
 
