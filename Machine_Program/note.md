@@ -38,7 +38,7 @@ movq    $-1                  $rax        $rax = FFFFFFFFFFFFFFFF
 
 `cltq` 
 
-> %rax  $\leftarrow$ SignExtend($eax)  专用于%rax 与 %eax的符号拓展
+> %rax  $\leftarrow$ Sign Extend($eax)  专用于%rax 与 %eax的符号拓展
 
 ```assem
 movabsq $0x0011223344556677, %rax        %rax = 0011223344556677
@@ -94,7 +94,7 @@ $leaq\ \ \ \  S,D\ \ \ \  D \leftarrow \&S$
 
 > # 主要内容
 >
-> 1. **Control:COndition Codes**
+> 1. **Control:Condition Codes**
 >
 > 2. **Conditional branches**
 >
@@ -117,25 +117,25 @@ $leaq\ \ \ \  S,D\ \ \ \  D \leftarrow \&S$
 
 
 
-- [**Implicityly setting** by arithmetic operations]
+- [**Implicitly setting** by arithmetic operations]
 
-**NOt set by`leaq` instruction **
+**Not set by`leaq` instruction **
 
 [**Explicit setting** by Compare Instruction]
 
 - cmpq Src2 Src1 #Src1 : Src2
 - cmpq b,a as computing a - b without setting destination
 
-[**Explict seeting** by Test instruction]
+[**Explicit sting** by Test instruction]
 
 - testq Src2,Src1 
 - as computing a&b without setting destination
 
-Sets condtion codes based on value of Src1&Src2
+Sets condition codes based on value of Src1&Src2
 - ZF set when a&b == 0
 - SF set when a & b < 0
 
-**Setx instructions**
+**Set instructions**
 ![alt text](assets/Setx.png)
 
 **jX instructions**
@@ -217,11 +217,73 @@ absdiff:
 > # 主要内容
 >
 > - Stack Structure 栈结构
-> - Callling Conventions 调用约定
+> - Calling Conventions 调用约定
 >   - Passing control
 >   - Passing data
 >   - Managing local data
 > - Illustration of Recursion 递归简介
+
+**stack is last-in and first-out data stucure.**
+
+> ### Grows toward lower addresses 
+>
+> ![image-20241211210107144](assets/stack_for_stack.png)
+>
+> ==%rsp points to the top element of the stack==
+>
+> ```
+> // allocated on the stack by  decrementing the stack pointer ----pushq
+> // deallocated by incrementing the stack pointer ---- popq
+> ```
+>
+> > [!Important]
+> >
+> > The stack frames for most procedures are of **fixed size**,allocated at the beginning of the procedure.
+> >
+> > but some procedures require variable-size frames.
+>
+> // TODO 
+
+As shown in picture 5,the arguments start 7. In x86-64,  six or fewer arguments can be passed in registers.
+
+<details><summary>Leaf Procedure</summary>
+    <dir>
+        when all of the local variables can be held in registers and the function does not all any other functions,the function not requir a stack frame.
+    </dir>
+</details> 
+
+#### Pass Control
+
+The two most important instruction are `callq` and `retq`
+
+| Instruction   | Description      |
+| ------------- | ---------------- |
+| call Label    | Procedure call   |
+| call *Operand | Procedure call   |
+| ret           | Return from call |
+
+call has two targets that the `Label` is direct and the `*Operand` is indirect.
+
+![image-20241211213953120](assets/call_and_ret.png)
+
+> ### `%rip` serves as the program counter, pointing to the currently executing instruction within a functions
+
+#### Data Transfer
+
+> [!Important]
+>
+> With x86-64,up to six integral(i.e. integer and pointer)arguments can be passed via registers. And these registers are fixed and return value is stored `%rax`.
+>
+> For x86-64,
+>
+> | x86-64 | `1:%rdi` | `2:%rsi` | `3:%rdx` | `4:%rcx` | `5:%r8` | `6:%9` |
+> | ------ | -------- | -------- | -------- | -------- | ------- | ------ |
+>
+> In Picture 5, additional arguments for the stack are shown, with argument 7 located at the top of the stack.
+
+#### Local Storage on the Stack
+
+
 
 ### Part IV Data  3.8 - 3.9 3.11
 
