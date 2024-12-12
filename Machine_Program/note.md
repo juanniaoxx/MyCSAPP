@@ -283,6 +283,45 @@ call has two targets that the `Label` is direct and the `*Operand` is indirect.
 
 #### Local Storage on the Stack
 
+```mermaid
+graph LR
+A[P]-->|call|B[Q]
+```
+
+P is caller and Q is callee.
+
+>  # *callee saved register and caller saved register*
+>
+> - Callee saved register: `%rbx`, `$rbp` and `%r12-%r15`,special `%rsp` 
+>   - ![image-20241212100108038](assets/callee-saved-registers.png)
+>   - Q must preserve the values of these registers,ensuring that they have the same value when Q returns to P.
+>     - option 1: not changer these registers.
+>     - option 2: push the old value of these registers to stack,and pop the old value when return P
+> - Caller saved    
+>   - ![image-20241212100108038](assets/caller-saved-registers.png)
+>   - P must preserve the valuers of these register,ensuring that they have the same value when Q return to P. Push the old value to the P stack frame.
+
+#### Recursive Procedures
+
+一个案例
+
+```c
+int p(int x) {
+    if(x < 0) return 0;
+
+    return x + p(x - 1);
+}
+
+int main(void) {
+    p(10);
+    return 0;
+}
+```
+
+![image-20241212101357550](assets/recursive_example.png)
+
+> ### The greatest risk of function recursion lies in the stack space, which is only a mere 8MB in Linux. If the recursion goes too deep, it can lead to stack overflow.
+
 ### Part IV Data  3.8 - 3.9 3.11
 
 > # 主要内容
@@ -297,6 +336,127 @@ call has two targets that the `Label` is direct and the `*Operand` is indirect.
 >   - Alignment 对齐
 > - Floating Point 浮点数
 
+<details>
+    <summary>所谓A[ i ]运算只是指针运算*(A + i)的语法糖！   </summary>
+    <div>
+        具体参考CPL Note
+     </div>
+</details>
+
+```assembly
+movl (%rdx, %rcx, 4), %eax
+```
+
+$x_A+4i$
+
+#### Heterogeneous Data Structures
+
+- Structures
+
+```c
+struct rec {
+    int i;
+    int j;
+    int a[2];
+    int *p;
+};
+```
+
+![image-20241212112447406](assets/struct.png)
+
+
+
+- Unions
+
+```c
+union U {
+    unsigned char c[8] ;
+    unsigned short s[4];
+    unsigned int i[2];
+    unsigned long l[1];
+};
+```
+
+![image-20241212113433221](assets/union.png)
+
+> ##### One application for Unions
+>
+> ​	One application is when we know in advance that the use of two different fields in a data structure will be **mutually exclusive[互相排斥]**. Then, declaring these two fields as part of a union rather than a structure will reduce the total space allocated.
+>
+> ​	For example, suppose we want to implement a binary tree data structure where each leaf node has two double data values and each internal node has pointers to two children but no data.
+>
+> ```c
+> struct node_s {
+>     struct node_s *left;
+>     struct node_s *right;
+>     double date[2];
+> }
+> ```
+>
+> `32bytes` and half the bytes wasted for each type of node.
+>
+> ```c
+> union node_u {
+>     struct {
+>         union node_u *left;
+>         union node_u *right;
+>     } internal;
+>     	double date[2];
+> }
+> ```
+>
+> `16bytes`, and for leaf node as n->date[0] and n->date[1],the children of an internal node as `n->internal.right` and `n->internal.left`
+>
+> but there is no way to determine whether a given node is a leaf or an internal node!
+>
+> ```c
+> typedef enum { N_LEAF, N_INTERNAL } nodetype_t;
+> 
+> struct node_t {
+>     nodetype_t type; 
+>     union {
+>         struct {
+>             struct node_t *left;
+>             struct node_t *right;
+>         } internal;
+>         double data[2];
+>     } info;
+> };
+> ```
+>
+> `24bytes`
+
+> ###  Union all reference the same block,but structures having the different fields reference different blocks of memory.
+
+> ## Unions VS Structures
+>
+> ```c
+> struct s3 {
+>     char c;
+>     int i[2];
+>     double v;
+> }
+> 
+> union u3 {
+>     char c;
+>     int i[2];
+>     double v;
+> }
+> ```
+>
+> | Type | c    | i    | v    | Size |
+> | ---- | ---- | ---- | ---- | ---- |
+> | `S3` | 0    | 4    | 16   | 24   |
+> | `U3` | 0    | 0    | 0    | 8    |
+
+
+
+> ### Data Alignment
+>
+> Their alignment rule is based on the principle that any primitive object of K bytes must have an address that is a multiple of K.
+
+
+
 ### Part V Advanced 3.10
 
 > # 主要内容
@@ -305,5 +465,4 @@ call has two targets that the `Label` is direct and the `*Operand` is indirect.
 > - Buffer Overflow 缓冲区溢出
 >   - Vulnerability 漏洞
 >   - Protection 保护
-> - Unions 联合体
 
