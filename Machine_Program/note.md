@@ -88,8 +88,6 @@ movzbq  %dl                  %rax       	  	 %rax = 00000000000000AA
 
 $leaq\ \ \ \  S,D\ \ \ \  D \leftarrow \&S$
 
-
-
 ### Part II control 3.6
 
 > # 主要内容
@@ -455,8 +453,6 @@ union U {
 >
 > Their alignment rule is based on the principle that any primitive object of K bytes must have an address that is a multiple of K.
 
-
-
 ### Part V Advanced 3.10
 
 > # 主要内容
@@ -466,3 +462,14 @@ union U {
 >   - Vulnerability 漏洞
 >   - Protection 保护
 
+>  [!Important]
+>
+> `GDB`一流图
+>
+> ![image-20241213203350371](assets/GDB.png)
+>
+> 关于GDB更详细的一图流见参考资料-[GDB](../参考资料/GDB参数.pdf)
+
+一个关于 **[buffer overflow](https://zh.wikipedia.org/zh-hans/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA)**的例子，
+
+![image-20241213210430545](assets/buffer.png)
