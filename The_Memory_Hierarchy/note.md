@@ -202,5 +202,76 @@ D-->E[CPU重新调度]
 
 ### 重点章节：Cache Memories
 
+#### Cache匹配
 
+图示：二路组相联
+
+![image-20241217092223518](assets/Cache一图流.png)
+
+> [!Important]
+>
+> Cache参数列表
+>
+> ![image-20241217092313591](assets/Cache_paramenters.png)
+
+关键三步走：组选择(set selection)、行匹配(line matching)、字抽取(word extraction)
+
+> 是通过主存地址匹(mm address)配对应的Cache
+>
+> 组选择：根据Set index选择对应的组
+>
+> 行匹配：通过在对应都set内比较Tag标签和vaild位是否有效判断Cache是否命中
+>
+> 若命中则进入字抽取阶段
+>
+> 根据offest位判断抽取Cache行对应都第几块内容
+
+Chatgpt写的[Cache模拟器](./Cache.html)
+
+**直接映射(direct-mapped)**
+
+![image-20241217100044958](assets/Direct_Map.png)
+
+> [!Note]
+>
+> **thrashing(抖动)** 直接映射有个很严重都问题(组相联也有但要好一点)，不同都地址会被映射到同一个Cache行上，可能导致Cache行不停都换入换出。
+>
+> 例子：
+>
+> ```c
+> float dotprod(float x[8], float y[8]) {
+>     float sum = 0. 0;
+>     int i = 0;
+>     
+>     for (i = 0; i < 8; i++)
+>         	sum += x[i] * y[i];
+>     return sum;
+> }
+> ```
+>
+> ![image-20241217101331502](assets/thrashing.png)
+>
+> 容易发现每次访问x[i]时会把x对应都block写入cache，但y[i]与x[i]对应都cache行号一致导致每次访问y[i]都会导致x[i]被重写，导致频繁都换入换出。
+>
+> 解决办法:
+>
+> 1. 让y[i]与x[i]分别存放在不同都cache行中 (用空间换)
+>
+> ![image-20241217101724256](assets/Sol1.png)
+>
+> 2. 采用全相联(用钱换)
+
+> [!Caution]
+>
+> 为啥用把set index放在中间，而不是高位呢？
+>
+> **均匀分布内存地址**，避免局部性导致组冲突。
+>
+> **利用空间局部性**，提升缓存性能。
+>
+> **简化硬件实现**，减少复杂性。
+>
+> **优化标记长度**，节省存储和比较开销。
+>
+> **保留高位的层次信息**，为地址管理和内存优化提供更好的支持
 

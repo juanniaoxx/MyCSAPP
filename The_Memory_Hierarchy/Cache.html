@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cache Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .cache-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+    }
+    .cache-table th, .cache-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    .cache-table th {
+      background-color: #f4f4f4;
+    }
+    .log {
+      margin: 20px 0;
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    .highlight {
+      background-color: #ffef99;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 5px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .binary-display {
+      font-family: monospace;
+      color: #0073e6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cache Simulator</h1>
+
+  <label for="cacheSizeInput">Cache Size (Number of Blocks): </label>
+  <input type="number" id="cacheSizeInput" value="8" min="1">
+  
+  <label for="mappingType">Mapping Type: </label>
+  <select id="mappingType">
+    <option value="direct">Direct Mapping</option>
+    <option value="fully">Fully Associative</option>
+    <option value="set">Set Associative</option>
+  </select>
+
+  <label for="setSizeInput" id="setSizeLabel" style="display: none;">Set Size: </label>
+  <input type="number" id="setSizeInput" value="2" min="1" style="display: none;">
+
+  <button onclick="initializeCache()">Set Configuration</button>
+
+  <p>Enter a memory address to simulate cache access:</p>
+  <input type="number" id="addressInput" placeholder="Enter memory address">
+  <button onclick="simulateCache()">Simulate</button>
+
+  <h2>Cache Table</h2>
+  <table class="cache-table">
+    <thead>
+      <tr>
+        <th>Cache Block/Set</th>
+        <th>Tag</th>
+        <th>Valid</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="cacheTable">
+      <!-- Cache rows will be dynamically generated -->
+    </tbody>
+  </table>
+
+  <div class="log" id="log">Logs will appear here...</div>
+
+  <script>
+    let cacheSize = 8; // Default cache size
+    let cache = [];
+    let mappingType = "direct"; // Default mapping type
+    let setSize = 2; // Default set size for set-associative mapping
+
+    function initializeCache() {
+      cacheSize = parseInt(document.getElementById('cacheSizeInput').value);
+      mappingType = document.getElementById('mappingType').value;
+
+      if (mappingType === "set") {
+        document.getElementById('setSizeLabel').style.display = "inline";
+        document.getElementById('setSizeInput').style.display = "inline";
+        setSize = parseInt(document.getElementById('setSizeInput').value);
+      } else {
+        document.getElementById('setSizeLabel').style.display = "none";
+        document.getElementById('setSizeInput').style.display = "none";
+      }
+
+      // Initialize cache based on mapping type
+      if (mappingType === "fully") {
+        cache = [];
+      } else if (mappingType === "set") {
+        cache = Array(cacheSize / setSize).fill(null).map(() => []);
+      } else {
+        cache = Array(cacheSize).fill(null).map(() => ({ tag: null, valid: false, data: null }));
+      }
+
+      updateCacheTable();
+      document.getElementById('log').innerHTML = `<p>Cache initialized with ${cacheSize} blocks, using ${mappingType} mapping.</p>`;
+    }
+
+    function simulateCache() {
+      const address = parseInt(document.getElementById('addressInput').value);
+      if (isNaN(address)) {
+        alert("Please enter a valid memory address!");
+        return;
+      }
+
+      const log = document.getElementById('log');
+      log.innerHTML = "";
+
+      const binaryAddress = address.toString(2).padStart(16, '0');
+      log.innerHTML += `<p><strong>Address (binary):</strong> <span class="binary-display">${binaryAddress}</span></p>`;
+
+      if (mappingType === "direct") {
+        simulateDirectMapping(address);
+      } else if (mappingType === "fully") {
+        simulateFullyAssociative(address);
+      } else if (mappingType === "set") {
+        simulateSetAssociative(address);
+      }
+    }
+
+    function simulateDirectMapping(address) {
+      const blockIndex = address % cacheSize;
+      const tag = Math.floor(address / cacheSize);
+
+      const cacheBlock = cache[blockIndex];
+      const log = document.getElementById('log');
+
+      setTimeout(() => {
+        if (cacheBlock.valid && cacheBlock.tag === tag) {
+          log.innerHTML += `<p class="highlight">Cache Hit! Block ${blockIndex} contains the tag ${tag}.</p>`;
+        } else {
+          const oldTag = cacheBlock.valid ? cacheBlock.tag : "None";
+          cacheBlock.tag = tag;
+          cacheBlock.valid = true;
+          cacheBlock.data = `Data for address ${address}`;
+          log.innerHTML += `<p class="highlight">Cache Miss! Block ${blockIndex} replaced tag ${oldTag} with ${tag}.</p>`;
+        }
+        updateCacheTable();
+      }, 1000);
+    }
+
+    function simulateFullyAssociative(address) {
+      const tag = address;
+      const log = document.getElementById('log');
+
+      setTimeout(() => {
+        const index = cache.findIndex(block => block.tag === tag && block.valid);
+        if (index !== -1) {
+          log.innerHTML += `<p class="highlight">Cache Hit! Tag ${tag} found in fully associative cache.</p>`;
+        } else {
+          if (cache.length >= cacheSize) {
+            cache.shift(); // Evict the oldest entry
+          }
+          cache.push({ tag, valid: true, data: `Data for address ${address}` });
+          log.innerHTML += `<p class="highlight">Cache Miss! Tag ${tag} added to fully associative cache.</p>`;
+        }
+        updateCacheTable();
+      }, 1000);
+    }
+
+    function simulateSetAssociative(address) {
+      const setIndex = (address % (cacheSize / setSize));
+      const tag = Math.floor(address / (cacheSize / setSize));
+
+      const set = cache[setIndex];
+      const log = document.getElementById('log');
+
+      setTimeout(() => {
+        const index = set.findIndex(block => block.tag === tag && block.valid);
+        if (index !== -1) {
+          log.innerHTML += `<p class="highlight">Cache Hit! Tag ${tag} found in set ${setIndex}.</p>`;
+        } else {
+          if (set.length >= setSize) {
+            set.shift(); // Evict the oldest entry
+          }
+          set.push({ tag, valid: true, data: `Data for address ${address}` });
+          log.innerHTML += `<p class="highlight">Cache Miss! Tag ${tag} added to set ${setIndex}.</p>`;
+        }
+        updateCacheTable();
+      }, 1000);
+    }
+
+    function updateCacheTable() {
+      const tableBody = document.getElementById('cacheTable');
+      tableBody.innerHTML = "";
+
+      if (mappingType === "fully") {
+        cache.forEach((block, index) => {
+          const row = `
+            <tr>
+              <td>${index}</td>
+              <td>${block.tag !== null ? block.tag : "-"}</td>
+              <td>${block.valid ? "Yes" : "No"}</td>
+              <td>${block.data || "-"}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      } else if (mappingType === "set") {
+        cache.forEach((set, setIndex) => {
+          set.forEach((block, blockIndex) => {
+            const row = `
+              <tr>
+                <td>Set ${setIndex}, Block ${blockIndex}</td>
+                <td>${block.tag !== null ? block.tag : "-"}</td>
+                <td>${block.valid ? "Yes" : "No"}</td>
+                <td>${block.data || "-"}</td>
+              </tr>
+            `;
+            tableBody.innerHTML += row;
+          });
+        });
+      } else {
+        cache.forEach((block, index) => {
+          const row = `
+            <tr>
+              <td>${index}</td>
+              <td>${block.tag !== null ? block.tag : "-"}</td>
+              <td>${block.valid ? "Yes" : "No"}</td>
+              <td>${block.data || "-"}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      }
+    }
+
+    // Initialize on load
+    initializeCache();
+  </script>
+</body>
+</html>
+
