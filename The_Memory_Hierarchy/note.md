@@ -275,3 +275,44 @@ Chatgpt写的[Cache模拟器](./Cache.html)
 >
 > **保留高位的层次信息**，为地址管理和内存优化提供更好的支持
 
+**Set associative Caches组相联映射**
+
+![set assciative](./assets/set _associative.png)
+
+**Full Associative Caches全相联映射**
+
+![截屏2024-12-17 11.48.50](./assets/full_associative.png)
+
+#### Cache with writes [Cache的写问题]
+
+写命中(write hit):写直达法(write through)与写回法(write back)
+
+> [!note]
+>
+> write through:每次更新cache的同时更新mm
+>
+> write back:每次只在cache被替换算法替换掉的时候把修改内容写入内存
+>
+> ​	需要额外的dirty bit来保证写回法的正确性
+
+写未命中(write miss):非写分配法(write-no-allocate)与写分配法(write-allocate)
+
+> [!note]
+>
+> Write-no-allocate 通常和write-through配合使用。未命中的时候同时把内容写入mm与cache副本
+>
+> write-allocate 通常和write-back配合使用。-->这是较为通用的Cache 模型。
+
+#### 与cache性能相关的参数
+
+- Miss rate. 未命中率
+- Hit rate. 命中率
+- Hit time. 命中时间，即访问cache的时间，包括组选择、行匹配、字抽取。
+- Miss penalty. 未命中代价，即去下一层取得内容的时间。
+
+#### 一些杂七杂八的知识点
+
+分离Cache，现代计算机为了更好的实现流水线一般会采用分离Cache的办法，即把指令Cache(i-cache)与数据Cache(d-cache)分离。同时现代计算机一般独有多级Cache。
+
+![截屏2024-12-17 12.03.42](./assets/多级cache.png)
+
