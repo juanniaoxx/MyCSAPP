@@ -316,3 +316,124 @@ Chatgpt写的[Cache模拟器](./Cache.html)
 
 ![截屏2024-12-17 12.03.42](./assets/多级cache.png)
 
+## Virtual Memory (虚拟存储)
+
+**Each byte of main memory has a virtual address chosen form the virtual address space and a physical address chosen form the physical address space!**
+
+使用VA的系统和不使用VA系统的区别
+
+![image-20241221131912267](./assets/VA_1.png)         
+
+![image-20241221132015571](./assets/VA_2.png)
+
+⚠️：VA-PA (address translation)需要软件(主要是操作系统)与硬件(图中的MMU)共同完成.
+
+VA page <---> PA page 一般采用全相联映射。
+
+> [!note]
+>
+> 二进制单位后缀
+>
+> $$KiBi=2^{10}\\MiBi=2^{20}\\GiBi=2^{30}\\TiBi=2^{40}\\PiGi=2^{50}\\EiBi=2^{60}$$
+
+**页表项的三种状态**
+
+- *unallcated* do not hava any data associated with them, and thus do not occupy any space on disk
+- *Cached* allocated pages that are currently cached in physical memory
+- *Uncached* allocated pages that are not cached in physical memory
+
+![image-20241221133220333](./assets/VA_status.png)
+
+只有访问处于 **Cached**状态的页表项可能 **page hit**
+
+> [!important]
+>
+> **page hits and page faults**
+>
+> 访问 **Cached**和有效的页表项时未命中，否则发生paga faluts
+>
+> ![image-20241221133822868](./assets/page_hit.png)
+>
+> ![](./assets/image-20241221134105295.png)
+>
+> 访问已经Uncached的页面导致发生缺页，并且此时物理页框对应的虚拟页已经满了，需要选择一个牺牲页来替换。
+>
+> (VA系统通常采用LRU策略和write-back& write-no-allocate)
+>
+> ![image-20241221134439071](./assets/VA_falut_after.png)
+>
+> ⚠️:选择牺牲页的过程由内核完成，并且由于缺页时异常，执行完缺页处理程序后会返回程序断点处重新执行指令。
+
+**swapped out(paged out)/swapped in(paged in)**
+
+> swapped out(paged out) from disk to DRAM(mm)
+>
+> swapped in(paged in) from DRAM to disk
+
+**Demand paging(请求调页)**
+
+> waiting until the last moment to swap in a page,when a miss occurs.
+
+**thrashing(抖动)**
+
+> If the working set size exceeds the size of physical memory, then the program can produce an unfortunate situation known as thrashing, where pages are swapped in and out continuously.
+
+### Address translation(地址翻译)
+
+![image-20241221135410934](./assets/VA.png)
+
+- PTBR(页表基址寄存器) 指向页表(常驻内存的那张页表)
+- VPN & VPO : 和起来组成了VA的位数，其中VPO为一页的大小(由于常见页大小为4KB且按字节编址，所以VP O的常见值为log(4k)=12,而VPN=VA-VPO)
+- PPN& PPO : 组成了PA的位数，由于页大小和页框大小一般一样大，则VPO=PPO，而PPN则需要通过VPN对应的页表项读出。
+
+![image-20241221140036347](./assets/VA_translate.png)
+
+**TLB(translation lookaside buffer**
+
+本质为页表项的cache，TLB一般采用较高关联度的映射模式(4-way or 8-way)，TLB使用VPN部分。
+
+![image-20241221140451666](./assets/TLB_hit.png)
+
+![image-20241221140527141](./assets/TLB-miss.png)
+
+### 多级页表
+
+> [!note]
+>
+> 为啥要引入多级页表，来看一个例子：
+>
+> 对于64位的机器，如一页大小为4KB，页表项大小为4B。则需要多大的页表呢？
+>
+> $需要页表项的数目为:2^{64-\log(4k)}=2^{52}\\需要的页表大小为2^{52}\times4B=16PB$
+>
+> 这个大小的页面需要常驻内存是不可能的，所以需要引入多级页表使得只需要让顶级页表常驻内存即可，其他次级页表之需要在使用的时候调入内存即可。
+
+![image-20241221141111175](./assets/mul-page.png)
+
+![image-20241221141135514](./assets/mul-page-address.png)
+
+由于TLB会缓存PTB，所以多级页表并不会特别慢！
+
+### Page and TLB and Cache
+
+```mermaid
+graph TD
+cpu[CPU产生VA]-->|VA|mmu[MMU执行地址翻译]
+mmu-->check_tlb{TLB?}
+subgraph  TLB缺失
+check_pte{PTE?}-->|yes|return[取出PTE并将其缓存到TLB中]
+check_pte-->|no|page_fault[缺页处理程序]-->page_handle[从磁盘调入]
+end
+check_tlb-->|no|check_pte
+check_tlb-->|yes|tlb_hit[查看PTE并取出PPN与VPO组成PA]
+tlb_hit-->check_cache{Cache？}
+check_cache-->|yes|cache_hit[直接从cache中取出]
+check_cache-->|no|cache_miss[需要从mm中掉入该部分内容]
+```
+
+> [!Caution]
+>
+> 发生缺页(page falut)一定意味这TLB和Cache都不可能命中，因为此时需要的页根本不在主存中而是位于磁盘中。
+>
+> TLB的命中与否和Cache命中与否无关。
+
