@@ -29,7 +29,7 @@
 | Exceptions and Processes                    | 8.1 - 8.4     |      | 异常与进程                             | <progress value="50" max="100"></progress>  |
 | Signals and Nonlocal Jumps                  | 8.5 - 8.8     |      | Shell与信号量                          | <progress value="50" max="100"></progress>  |
 | System Level I-O                            | 10            |      | 系统级I/O                              | <progress value="0" max="100"></progress>   |
-| Virtual Memory Concepts                     | 9.1 - 9.6     |      |                                        | <progress value="0" max="100"></progress>   |
+| Virtual Memory Concepts                     | 9.1 - 9.6     |      | 重点为：          9.6VA与PA的转换      | <progress value="80" max="100"></progress>  |
 | Virtual Memory Systems                      | 9.7 - 9.8     |      |                                        | <progress value="0" max="100"></progress>   |
 | Dynamic Memory Allocation Basic Concepts    | 9.9           |      |                                        | <progress value="0" max="100"></progress>   |
 | Dynamic Memory Allocation Advanced COncepts | 9.9 - 9.11    |      |                                        | <progress value="0" max="100"></progress>   |
