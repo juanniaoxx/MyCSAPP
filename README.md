@@ -15,8 +15,8 @@
 |                                             | 阅读材料      | 习题 | 备注                                   | 完成度                                      |
 | ------------------------------------------- | ------------- | ---- | -------------------------------------- | ------------------------------------------- |
 | Coures Overvies                             | 1             |      | 整体介绍                               | <progress value="100" max="100"></progress> |
-| Bits,Bytes,and Integers cont                | 2.1 - 2.3     |      | 有符号书与无符号数                     | <progress value="100" max="100"></progress> |
-| Floating Point                              | 2.4 2.5       |      | 浮点数IEE754                           | <progress value="0" max="100"></progress>   |
+| Bits,Bytes,and Integers cont                | 2.1 - 2.3     |      | 有符号书与无符号数                     | <progress value="50" max="100"></progress>  |
+| Floating Point                              | 2.4 2.5       |      | 浮点数IEE754                           | <progress value="80" max="100"></progress>  |
 | Machine Level Programming I                 | 3.1 - 3.5     |      | 介绍基本的x86汇编指令体系,以及寄存器   | <progress value="80" max="100"></progress>  |
 | Machine Level Programming II                | 3.6           |      | 程序控制流   标志位                    | <progress value="80" max="100"></progress>  |
 | Machine Level Programming III               | 3.7           |      | 程序调用                               | <progress value="80" max="100"></progress>  |
@@ -36,7 +36,7 @@
 | Network Programming Part 1                  | 11.1 - 11.4   |      |                                        | <progress value="0" max="100"></progress>   |
 | Network Programming Part 2                  | 11.5 - 11.6   |      |                                        | <progress value="0" max="100"></progress>   |
 | Synchronization Basics                      | 12.1 - 12.3   |      |                                        | <progress value="0" max="100"></progress>   |
-| SYnachronization Advanced                   | 12.4 12.5.1-3 |      |                                        | <progress value="0" max="100"></progress>   |
+| Synachronization Advanced                   | 12.4 12.5.1-3 |      |                                        | <progress value="0" max="100"></progress>   |
 | Thread Level Parallelism                    | 12.5.4-5 12.7 |      |                                        | <progress value="0" max="100"></progress>   |
 | Concurrent Programming                      | 12.6          |      |                                        | <progress value="0" max="100"></progress>   |
 

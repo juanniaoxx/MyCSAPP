@@ -52,7 +52,7 @@ INTEGER CODING RULES:
   Each "Expr" may consist of multiple operators. You are not restricted to
   one operator per line.
 
-  You are expressly forbidden to:
+  You are expressly forbidden(禁止) to:
   1. Use any control constructs such as if, do, while, for, switch, etc.
   2. Define or use any macros.
   3. Define any additional functions in this file.
@@ -143,7 +143,13 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  int x_and_y = x & y;
+  int notx = ~x;
+  int noty = ~y;
+  int notx_and_noty = notx & noty;
+
+  int x_xor_y=~(x_and_y & notx_and_noty);
+  return x_xor_y;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -153,10 +159,9 @@ int bitXor(int x, int y) {
  */
 int tmin(void) {
 
-  return 2;
+  return 1 << 31;
 
 }
-//2
 /*
  * isTmax - returns 1 if x is the maximum, two's complement number,
  *     and 0 otherwise 
@@ -165,7 +170,7 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  return !(~((x+1) ^ x) + x + 1);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
