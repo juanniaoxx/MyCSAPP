@@ -2,14 +2,7 @@
 
 ## The Memory Hierarchy(分层)
 
-内存系统最重要的特点就是**利用局部性(locality)**
-
-> [!Important]
->
-> 将会学到
->
-> - DRAM\SRAM\Disk\SSD
-> - Locality
+存储系统最重要的特点就是**利用局部性(locality)**、**层次性结构**
 
 ### Storage Technologies
 
@@ -34,6 +27,7 @@
 > > 2. DRAM为啥要刷新而SRAM为啥不要刷新？
 > >    - DRAM使用电容存储，而SRAM用晶体关。电容天然存在**漏电问题**。
 > >    - 刷新(refresh):reading it out and the rewriting it.[读出重写]
+> >    - 按行刷新
 >
 > **DRAM chip**
 >
@@ -436,4 +430,3 @@ check_cache-->|no|cache_miss[需要从mm中掉入该部分内容]
 > 发生缺页(page falut)一定意味这TLB和Cache都不可能命中，因为此时需要的页根本不在主存中而是位于磁盘中。
 >
 > TLB的命中与否和Cache命中与否无关。
-
