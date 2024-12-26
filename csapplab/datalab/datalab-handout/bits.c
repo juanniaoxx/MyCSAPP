@@ -170,8 +170,12 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return !(~((x+1) ^ x) + x + 1);
+  // maximum = 0x7fffffff
+  int x_plus_1 = x + 1;
+  int not_tmax = x_plus_1 ^ 0x80000000;  // x + 1 should be 0x80000000 for Tmax
+  return !(not_tmax | !x);  // Ensure that x is not -1 and x + 1 is 0x80000000
 }
+
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
  *   where bits are numbered from 0 (least significant) to 31 (most significant)
