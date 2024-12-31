@@ -143,13 +143,8 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  int x_and_y = x & y;
-  int notx = ~x;
-  int noty = ~y;
-  int notx_and_noty = notx & noty;
-
-  int x_xor_y=~(x_and_y & notx_and_noty);
-  return x_xor_y;
+    
+    return ~(~x & ~y) & ~(x & y);
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -170,10 +165,8 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  // maximum = 0x7fffffff
-  int x_plus_1 = x + 1;
-  int not_tmax = x_plus_1 ^ 0x80000000;  // x + 1 should be 0x80000000 for Tmax
-  return !(not_tmax | !x);  // Ensure that x is not -1 and x + 1 is 0x80000000
+    
+    return 0;
 }
 
 /* 
